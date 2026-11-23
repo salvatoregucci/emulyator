@@ -1,1 +1,37 @@
-
+{
+  "name": "order-studio-demo",
+  "version": "1.0.0",
+  "description": "Standalone desktop demo emulator",
+  "main": "main.js",
+  "author": "salvatoregucci",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "com.emulyator.orderstudio.demo",
+    "productName": "Order Studio DEMO",
+    "asar": true,
+    "files": [
+      "index.html",
+      "main.js",
+      "manifest.webmanifest",
+      "icon.svg"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "Order-Studio-DEMO-${version}-portable.exe"
+    },
+    "publish": null
+  }
+}
