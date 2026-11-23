@@ -1,23 +1,25 @@
-# Order Studio DEMO — приложение для компьютера
+# Order Studio DEMO
 
-Это мини-приложение (PWA): его можно установить из Chrome или Microsoft Edge и запускать отдельным окном. Проект не требует Python, C++ или сборки.
+English standalone desktop and mobile emulator. This is not an official marketplace page and does not process real orders or payments.
 
-## Установить на ПК
+## Features
 
-1. Откройте настройки репозитория **Settings → Pages**.
-2. В **Build and deployment** выберите **Deploy from a branch**, ветку `main` и папку `/ (root)`, затем нажмите **Save**.
-3. После публикации откройте выданный GitHub Pages URL в Chrome или Edge на компьютере.
-4. Нажмите кнопку **«Установить приложение»** в верхней панели. Если кнопка не появилась, используйте значок установки в адресной строке браузера или меню браузера → **Install app**.
-5. После установки приложение будет запускаться из меню «Пуск» / списка приложений в отдельном окне. Первый запуск и установка требуют интернета; затем страница доступна офлайн.
+- Mobile order-preview layout based on the supplied screenshot
+- English interface and labels
+- Click or upload a product photo
+- Replace the photo using an HTTPS image URL
+- Edit item name, order number, date, SKU, size, condition, tracking, and shipping address
+- Set item price and shipping cost
+- Set commission percentage; commission and seller payout update automatically
+- Save settings in browser local storage
 
-Не открывайте `index.html` двойным щелчком для установки: PWA устанавливается с защищённого HTTPS-сайта (например, GitHub Pages), а не как локальный HTML-файл.
+## Run
 
-## Функции
+Open `index.html` directly in a browser, or publish the repository with GitHub Pages:
 
-- Настраиваемое мобильное превью страницы.
-- Фото можно выбрать с компьютера или вставить ссылку `https://…` и нажать **«Применить»**.
-- Цена, стоимость доставки и процент комиссии пересчитывают суммы автоматически.
-- Редактируются демо-данные товара и адреса.
-- **Сохранить** запоминает параметры локально в браузере.
+1. Open **Settings → Pages**.
+2. Choose **Deploy from a branch**.
+3. Select `main` and `/ (root)`.
+4. Open the generated HTTPS URL.
 
-Все экраны имеют заметную маркировку DEMO. Это независимый макет, не подключённый к магазинам, заказам, платежам или доставке.
+A Windows Electron build configuration is also included in the repository.
