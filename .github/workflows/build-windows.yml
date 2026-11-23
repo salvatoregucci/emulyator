@@ -2,10 +2,15 @@ name: Build Windows executable
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "index.html"
+      - "main.js"
+      - "package.json"
+      - ".github/workflows/build-windows.yml"
 
 permissions:
   contents: read
-  actions: read
 
 jobs:
   build-windows:
