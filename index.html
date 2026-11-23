@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f4f1">
+  <title>Макет магазина — локальный демо-эмулятор</title>
+  <style>
+    :root { color-scheme: light; --ink:#171717; --muted:#777; --line:#e6e6e2; --paper:#fff; --canvas:#f3f3f0; --accent:#c8f169; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--canvas); font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    button,input { font:inherit; }
+    .topbar { height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:#fff; border-bottom:1px solid var(--line); }
+    .brand { font-size:14px; letter-spacing:.16em; font-weight:800; }
+    .demo-pill { background:#fff3d4; color:#775500; border-radius:99px; padding:7px 11px; font-size:11px; font-weight:800; letter-spacing:.06em; }
+    .workspace { max-width:1100px; margin:34px auto; padding:0 20px; display:grid; grid-template-columns:minmax(320px,440px) minmax(320px,420px); gap:52px; align-items:start; justify-content:center; }
+    .preview-area { display:flex; flex-direction:column; align-items:center; gap:12px; }
+    .preview-caption { width:100%; text-align:center; color:var(--muted); font-size:12px; }
+    .device { width:min(100%,440px); min-height: min(956px, calc(100vh - 130px)); height:956px; max-height:956px; overflow:auto; background:#fff; border:8px solid #202020; border-radius:44px; box-shadow:0 22px 70px #17171720; scrollbar-width:none; }
+    .device::-webkit-scrollbar { display:none; }
+    .phone-status { height:42px; padding:12px 25px 0; display:flex; justify-content:space-between; font-size:12px; font-weight:700; }
+    .store-nav { height:55px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; padding:0 22px; }
+    .store-logo { font-size:14px; font-weight:900; letter-spacing:.17em; }
+    .nav-icons { display:flex; gap:15px; font-size:19px; }
+    .demo-ribbon { background:#fff4d8; color:#745600; text-align:center; padding:7px; font-size:10px; font-weight:800; letter-spacing:.09em; }
+    .product-image { width:100%; height:418px; background:#efefeb; display:grid; place-items:center; overflow:hidden; position:relative; }
+    .product-image img { display:block; width:100%; height:100%; object-fit:cover; }
+    .image-fallback { padding:24px; text-align:center; color:#898983; font-size:13px; }
+    .image-fallback strong { display:block; font-size:52px; margin-bottom:6px; color:#bbb; }
+    .product-content { padding:21px 22px 25px; }
+    .condition { color:#666; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+    .product-title { margin:7px 0 3px; font-size:23px; line-height:1.15; font-weight:750; }
+    .product-subtitle { margin:0; color:#666; font-size:14px; }
+    .size-row { display:flex; align-items:center; justify-content:space-between; margin:20px 0 15px; padding:13px 0; border-top:1px solid #eee; border-bottom:1px solid #eee; }
+    .size-value { font-weight:700; }
+    .price-row { display:flex; align-items:baseline; gap:8px; margin-bottom:16px; }
+    .price { font-size:27px; font-weight:800; }
+    .ship-note { color:#777; font-size:12px; }
+    .buy-button { height:52px; border:0; border-radius:3px; width:100%; background:#171717; color:white; font-weight:750; letter-spacing:.04em; }
+    .location { border-top:1px solid #eee; padding-top:16px; margin-top:17px; color:#555; font-size:12px; }
+    .location b { color:#191919; }
+    .edit-panel { background:#fff; border:1px solid var(--line); border-radius:14px; padding:24px; box-shadow:0 8px 26px #00000008; }
+    .edit-panel h1 { margin:0 0 5px; font-size:22px; }
+    .intro { margin:0 0 22px; color:var(--muted); font-size:13px; }
+    .field { margin:0 0 16px; }
+    label { display:block; margin-bottom:6px; font-size:12px; font-weight:700; }
+    input { width:100%; height:42px; padding:0 11px; border:1px solid #dcdcd7; border-radius:7px; outline:none; background:#fff; }
+    input:focus { border-color:#73736c; box-shadow:0 0 0 3px #0000000c; }
+    input[type=file] { height:auto; padding:10px; font-size:12px; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .money-box { padding:14px; border-radius:9px; background:#f5f5f1; margin:3px 0 17px; }
+    .calc-row { display:flex; justify-content:space-between; padding:4px 0; color:#555; font-size:13px; }
+    .calc-row strong { color:#161616; }
+    .calc-row.total { border-top:1px solid #deded9; margin-top:7px; padding-top:11px; font-size:14px; font-weight:800; }
+    .hint { margin:9px 0 0; color:#777; font-size:11px; }
+    .actions { display:flex; gap:10px; }
+    .actions button { min-height:43px; border:0; border-radius:7px; padding:0 15px; font-weight:750; cursor:pointer; }
+    .save { background:#171717; color:white; flex:1; }
+    .reset { background:#eee; color:#222; }
+    .saved { min-height:18px; margin:10px 0 0; color:#407523; font-size:12px; }
+    .disclaimer { margin:18px 0 0; padding-top:14px; border-top:1px solid var(--line); color:#777; font-size:11px; }
+    @media (max-width:760px) {
+      .topbar { height:56px; padding:0 16px; }
+      .workspace { display:flex; flex-direction:column; align-items:center; margin:18px auto; padding:0 12px; gap:22px; }
+      .preview-area { width:100%; }
+      .device { width:min(100%,440px); height:min(956px, calc(100dvh - 95px)); min-height:700px; border-width:6px; border-radius:34px; }
+      .edit-panel { width:min(100%,440px); }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">ARCHIVE / STUDIO</div>
+    <span class="demo-pill">ЛОКАЛЬНЫЙ ДЕМО-МАКЕТ</span>
+  </header>
+  <main class="workspace">
+    <section class="preview-area" aria-label="Предпросмотр страницы товара">
+      <div class="preview-caption">Предпросмотр · пропорции экрана iPhone 17 Pro Max</div>
+      <div class="device">
+        <div class="phone-status"><span>9:41</span><span>●●●　◉　▰</span></div>
+        <div class="store-nav"><span class="store-logo">ARCHIVE</span><span class="nav-icons"><span aria-hidden="true">⌕</span><span aria-hidden="true">♡</span><span aria-hidden="true">▱</span></span></div>
+        <div class="demo-ribbon">DEMO · НЕ ОФИЦИАЛЬНЫЙ САЙТ И НЕ GOAT</div>
+        <div class="product-image" id="imageBox">
+          <div class="image-fallback" id="imageFallback"><strong>＋</strong>Добавьте фото товара в панели настроек</div>
+          <img id="productImage" alt="Фото товара" hidden>
+        </div>
+        <div class="product-content">
+          <div class="condition">НОВЫЙ · В КОРОБКЕ</div>
+          <h2 class="product-title" id="previewName">Кроссовки Archive Runner</h2>
+          <p class="product-subtitle">Коллекция · повседневная обувь</p>
+          <div class="size-row"><span>Размер</span><span class="size-value" id="previewSize">US M 9</span></div>
+          <div class="price-row"><span class="price" id="previewPrice">$0.00</span><span class="ship-note">＋ доставка</span></div>
+          <button type="button" class="buy-button" aria-label="Демонстрационная кнопка, оформление заказа отключено">КУПИТЬ · ДЕМО</button>
+          <div class="location">Местоположение продавца<br><b id="previewAddress">Нью-Йорк, США</b></div>
+        </div>
+      </div>
+    </section>
+    <section class="edit-panel" aria-labelledby="formTitle">
+      <h1 id="formTitle">Настройки макета</h1>
+      <p class="intro">Меняйте данные — предпросмотр обновится автоматически. Настройки сохраняются только в этом браузере.</p>
+      <div class="field"><label for="nameInput">Название товара</label><input id="nameInput" value="Кроссовки Archive Runner" maxlength="70"></div>
+      <div class="field"><label for="imageFile">Фотография товара (с устройства)</label><input id="imageFile" type="file" accept="image/*"><p class="hint">Изображение не загружается на сервер и остаётся в вашем браузере.</p></div>
+      <div class="two-col">
+        <div class="field"><label for="priceInput">Цена товара ($)</label><input id="priceInput" type="number" min="0" step="0.01" value="0"></div>
+        <div class="field"><label for="commissionInput">Комиссия (%)</label><input id="commissionInput" type="number" min="0" max="100" step="0.1" value="0"></div>
+      </div>
+      <div class="money-box" aria-live="polite">
+        <div class="calc-row"><span>Цена товара</span><strong id="calcPrice">$0.00</strong></div>
+        <div class="calc-row"><span>Комиссия</span><strong id="calcCommission">−$0.00</strong></div>
+        <div class="calc-row total"><span>После комиссии</span><strong id="calcPayout">$0.00</strong></div>
+        <p class="hint">Расчёт: цена × процент комиссии; сумма после комиссии = цена − комиссия. Укажите актуальный процент самостоятельно.</p>
+      </div>
+      <div class="two-col">
+        <div class="field"><label for="sizeInput">Размер</label><input id="sizeInput" value="US M 9" maxlength="20"></div>
+        <div class="field"><label for="addressInput">Адрес / локация</label><input id="addressInput" value="Нью-Йорк, США" maxlength="80"></div>
+      </div>
+      <div class="actions"><button class="save" id="saveButton" type="button">Сохранить в браузере</button><button class="reset" id="resetButton" type="button">Сбросить</button></div>
+      <p class="saved" id="savedMessage" aria-live="polite"></p>
+      <p class="disclaimer">Это самостоятельный демонстрационный макет: он не связан с GOAT, не принимает платежи, не создаёт объявления и не подтверждает подлинность товаров. Не используйте его для выдачи за настоящий сервис.</p>
+    </section>
+  </main>
+<script>
+(() => {
+  const defaults = { name:'Кроссовки Archive Runner', price:'0', commission:'0', size:'US M 9', address:'Нью-Йорк, США', image:'' };
+  const ids = ['nameInput','priceInput','commissionInput','sizeInput','addressInput'];
+  const fields = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+  const image = document.getElementById('productImage');
+  const fallback = document.getElementById('imageFallback');
+  const currency = value => '$' + (Number.isFinite(value) ? value : 0).toFixed(2);
+  function update() {
+    const price = Math.max(0, Number(fields.priceInput.value) || 0);
+    const rate = Math.min(100, Math.max(0, Number(fields.commissionInput.value) || 0));
+    const fee = price * rate / 100;
+    document.getElementById('previewName').textContent = fields.nameInput.value.trim() || defaults.name;
+    document.getElementById('previewPrice').textContent = currency(price);
+    document.getElementById('previewSize').textContent = fields.sizeInput.value.trim() || '—';
+    document.getElementById('previewAddress').textContent = fields.addressInput.value.trim() || 'Не указано';
+    document.getElementById('calcPrice').textContent = currency(price);
+    document.getElementById('calcCommission').textContent = '−' + currency(fee);
+    document.getElementById('calcPayout').textContent = currency(price - fee);
+    document.getElementById('savedMessage').textContent = '';
+  }
+  function setImage(src) {
+    if (!src) { image.hidden = true; image.removeAttribute('src'); fallback.hidden = false; return; }
+    image.src = src; image.hidden = false; fallback.hidden = true;
+  }
+  function save() {
+    const data = Object.fromEntries(ids.map(id => [id, fields[id].value]));
+    data.image = image.hidden ? '' : image.src;
+    try { localStorage.setItem('archiveStudioDemo', JSON.stringify(data)); document.getElementById('savedMessage').textContent = 'Сохранено в этом браузере.'; }
+    catch (_) { document.getElementById('savedMessage').textContent = 'Не удалось сохранить — возможно, фото слишком большое. Попробуйте изображение меньшего размера.'; }
+  }
+  function load() {
+    try {
+      const data = JSON.parse(localStorage.getItem('archiveStudioDemo') || 'null');
+      if (data) { ids.forEach(id => { if (typeof data[id] === 'string') fields[id].value = data[id]; }); setImage(data.image || ''); }
+    } catch (_) { /* Ignore damaged local demo settings. */ }
+  }
+  ids.forEach(id => fields[id].addEventListener('input', update));
+  document.getElementById('imageFile').addEventListener('change', event => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { alert('Выберите файл изображения.'); return; }
+    const reader = new FileReader(); reader.onload = () => { setImage(String(reader.result)); update(); }; reader.readAsDataURL(file);
+  });
+  document.getElementById('saveButton').addEventListener('click', save);
+  document.getElementById('resetButton').addEventListener('click', () => {
+    ids.forEach(id => fields[id].value = defaults[id.replace('Input','')] || '');
+    document.getElementById('imageFile').value = ''; setImage(''); localStorage.removeItem('archiveStudioDemo'); update();
+  });
+  load(); update();
+})();
+</script>
+</body>
+</html>
