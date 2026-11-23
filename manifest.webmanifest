@@ -1,0 +1,1 @@
+{"name":"Order Studio DEMO","short_name":"Order Demo","description":"Локальный демонстрационный редактор макета страницы заказа","start_url":"./","scope":"./","display":"standalone","background_color":"#f2f2ef","theme_color":"#f2f2ef","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}

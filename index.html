@@ -1,175 +1,58 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f4f4f1">
-  <title>Макет магазина — локальный демо-эмулятор</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f2ef">
+  <meta name="description" content="Локальный демо-эмулятор страницы товара и заказа">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>Order Studio — DEMO</title>
   <style>
-    :root { color-scheme: light; --ink:#171717; --muted:#777; --line:#e6e6e2; --paper:#fff; --canvas:#f3f3f0; --accent:#c8f169; }
-    * { box-sizing:border-box; }
-    body { margin:0; color:var(--ink); background:var(--canvas); font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    button,input { font:inherit; }
-    .topbar { height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:#fff; border-bottom:1px solid var(--line); }
-    .brand { font-size:14px; letter-spacing:.16em; font-weight:800; }
-    .demo-pill { background:#fff3d4; color:#775500; border-radius:99px; padding:7px 11px; font-size:11px; font-weight:800; letter-spacing:.06em; }
-    .workspace { max-width:1100px; margin:34px auto; padding:0 20px; display:grid; grid-template-columns:minmax(320px,440px) minmax(320px,420px); gap:52px; align-items:start; justify-content:center; }
-    .preview-area { display:flex; flex-direction:column; align-items:center; gap:12px; }
-    .preview-caption { width:100%; text-align:center; color:var(--muted); font-size:12px; }
-    .device { width:min(100%,440px); min-height: min(956px, calc(100vh - 130px)); height:956px; max-height:956px; overflow:auto; background:#fff; border:8px solid #202020; border-radius:44px; box-shadow:0 22px 70px #17171720; scrollbar-width:none; }
-    .device::-webkit-scrollbar { display:none; }
-    .phone-status { height:42px; padding:12px 25px 0; display:flex; justify-content:space-between; font-size:12px; font-weight:700; }
-    .store-nav { height:55px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; padding:0 22px; }
-    .store-logo { font-size:14px; font-weight:900; letter-spacing:.17em; }
-    .nav-icons { display:flex; gap:15px; font-size:19px; }
-    .demo-ribbon { background:#fff4d8; color:#745600; text-align:center; padding:7px; font-size:10px; font-weight:800; letter-spacing:.09em; }
-    .product-image { width:100%; height:418px; background:#efefeb; display:grid; place-items:center; overflow:hidden; position:relative; }
-    .product-image img { display:block; width:100%; height:100%; object-fit:cover; }
-    .image-fallback { padding:24px; text-align:center; color:#898983; font-size:13px; }
-    .image-fallback strong { display:block; font-size:52px; margin-bottom:6px; color:#bbb; }
-    .product-content { padding:21px 22px 25px; }
-    .condition { color:#666; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
-    .product-title { margin:7px 0 3px; font-size:23px; line-height:1.15; font-weight:750; }
-    .product-subtitle { margin:0; color:#666; font-size:14px; }
-    .size-row { display:flex; align-items:center; justify-content:space-between; margin:20px 0 15px; padding:13px 0; border-top:1px solid #eee; border-bottom:1px solid #eee; }
-    .size-value { font-weight:700; }
-    .price-row { display:flex; align-items:baseline; gap:8px; margin-bottom:16px; }
-    .price { font-size:27px; font-weight:800; }
-    .ship-note { color:#777; font-size:12px; }
-    .buy-button { height:52px; border:0; border-radius:3px; width:100%; background:#171717; color:white; font-weight:750; letter-spacing:.04em; }
-    .location { border-top:1px solid #eee; padding-top:16px; margin-top:17px; color:#555; font-size:12px; }
-    .location b { color:#191919; }
-    .edit-panel { background:#fff; border:1px solid var(--line); border-radius:14px; padding:24px; box-shadow:0 8px 26px #00000008; }
-    .edit-panel h1 { margin:0 0 5px; font-size:22px; }
-    .intro { margin:0 0 22px; color:var(--muted); font-size:13px; }
-    .field { margin:0 0 16px; }
-    label { display:block; margin-bottom:6px; font-size:12px; font-weight:700; }
-    input { width:100%; height:42px; padding:0 11px; border:1px solid #dcdcd7; border-radius:7px; outline:none; background:#fff; }
-    input:focus { border-color:#73736c; box-shadow:0 0 0 3px #0000000c; }
-    input[type=file] { height:auto; padding:10px; font-size:12px; }
-    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .money-box { padding:14px; border-radius:9px; background:#f5f5f1; margin:3px 0 17px; }
-    .calc-row { display:flex; justify-content:space-between; padding:4px 0; color:#555; font-size:13px; }
-    .calc-row strong { color:#161616; }
-    .calc-row.total { border-top:1px solid #deded9; margin-top:7px; padding-top:11px; font-size:14px; font-weight:800; }
-    .hint { margin:9px 0 0; color:#777; font-size:11px; }
-    .actions { display:flex; gap:10px; }
-    .actions button { min-height:43px; border:0; border-radius:7px; padding:0 15px; font-weight:750; cursor:pointer; }
-    .save { background:#171717; color:white; flex:1; }
-    .reset { background:#eee; color:#222; }
-    .saved { min-height:18px; margin:10px 0 0; color:#407523; font-size:12px; }
-    .disclaimer { margin:18px 0 0; padding-top:14px; border-top:1px solid var(--line); color:#777; font-size:11px; }
-    @media (max-width:760px) {
-      .topbar { height:56px; padding:0 16px; }
-      .workspace { display:flex; flex-direction:column; align-items:center; margin:18px auto; padding:0 12px; gap:22px; }
-      .preview-area { width:100%; }
-      .device { width:min(100%,440px); height:min(956px, calc(100dvh - 95px)); min-height:700px; border-width:6px; border-radius:34px; }
-      .edit-panel { width:min(100%,440px); }
-    }
+    :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#171717;background:#f2f2ef}*{box-sizing:border-box}body{margin:0}button,input{font:inherit}.appbar{height:56px;background:#fff;border-bottom:1px solid #ddd;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:5}.brand{font-weight:850;letter-spacing:.13em;font-size:13px}.bar-right{display:flex;gap:12px;align-items:center}.badge{background:#fff0c8;color:#654900;padding:6px 9px;border-radius:20px;font-size:10px;font-weight:850;letter-spacing:.05em}.install{border:0;border-radius:7px;background:#171717;color:#fff;padding:9px 13px;font-size:12px;font-weight:700;cursor:pointer}.install[hidden]{display:none}.layout{max-width:1080px;margin:20px auto;padding:0 16px;display:grid;grid-template-columns:430px 330px;gap:24px;align-items:start;justify-content:center}.preview{width:430px;min-height:880px;background:#fff;box-shadow:0 12px 40px #0002;overflow:hidden}.status{height:44px;padding:12px 24px 0;display:flex;justify-content:space-between;font-size:15px;font-weight:700}.demo-mark{background:#fff2cf;text-align:center;padding:5px;font-size:10px;font-weight:850;letter-spacing:.09em;color:#6b4d00}.hero{height:390px;position:relative;background:#eee}.photoBtn{display:grid;place-items:center;width:100%;height:100%;border:0;padding:0;background:#eee;cursor:pointer}.photoBtn img{width:100%;height:100%;object-fit:contain}.placeholder{color:#777;text-align:center;font-size:13px;line-height:1.6}.placeholder b{display:block;font-size:20px}.heroTitle{position:absolute;top:19px;left:22px;max-width:255px;font-size:19px;font-weight:700;line-height:1.22;pointer-events:none}.heroOrder{position:absolute;right:19px;top:20px;text-decoration:underline;font-size:17px;pointer-events:none}.progress{height:136px;padding:29px 23px 0;border-bottom:1px solid #555}.track{height:2px;background:#888;position:relative;margin:0 8px}.track:before,.track:after,.middle{position:absolute;width:14px;height:14px;background:#111;top:-6px}.track:before,.track:after{content:""}.track:before{left:0}.track:after{right:0}.middle{left:50%;transform:translateX(-50%)}.stages{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:8px;font-size:17px;font-weight:600}.stages span:nth-child(2){text-align:center}.stages span:nth-child(3){text-align:right}.thanks{margin-top:19px;font-size:17px;line-height:1.3}.rows{border-bottom:1px solid #777}.row{display:grid;grid-template-columns:38% 62%;align-items:center;min-height:65px;padding:9px 22px;border-bottom:1px solid #f1f1f1;font-size:16px}.row:last-child{border-bottom:0}.val{text-align:right;overflow-wrap:anywhere;text-decoration:underline}.plain{text-decoration:none}.address{min-height:105px}.totals{padding:16px 22px;display:grid;grid-template-columns:1fr 1fr;min-height:140px}.totalLabels,.totalValues{display:flex;flex-direction:column;justify-content:space-between;font-size:16px}.totalValues{text-align:right}.editor{background:#fff;border:1px solid #e1e1dc;border-radius:12px;padding:17px;box-shadow:0 6px 24px #0000000c}.editor h1{font-size:19px;margin:0 0 4px}.editor .desc{font-size:12px;color:#666;margin:0 0 15px}.field{margin-bottom:10px}.field label{display:block;font-size:11px;font-weight:750;margin-bottom:4px}.field input{width:100%;height:37px;border:1px solid #d5d5d0;border-radius:6px;padding:0 9px;background:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.photoActions{display:flex;gap:6px}.photoActions input{min-width:0;flex:1}.photoActions button,.buttons button{border:0;border-radius:6px;padding:0 10px;font-size:11px;font-weight:700;cursor:pointer}.photoActions button{background:#e8e8e4}.calc{background:#f3f3ef;border-radius:7px;padding:9px 10px;margin:10px 0;font-size:12px}.calc div{display:flex;justify-content:space-between;padding:3px 0}.calc div:last-child{border-top:1px solid #ddd;margin-top:4px;padding-top:7px;font-weight:800}.buttons{display:flex;gap:8px;margin-top:6px}.buttons button{height:39px}.save{flex:1;background:#171717;color:#fff}.reset{background:#eee}.statusmsg{height:16px;margin:7px 0 0;color:#347326;font-size:11px}.foot{font-size:10px;color:#777;line-height:1.4;margin:8px 0 0}.offline{display:none;position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 13px;border-radius:20px;font-size:11px;z-index:10}.offline.show{display:block}
+    @media(max-width:800px){.layout{display:flex;flex-direction:column;align-items:center;margin:10px auto;padding:0 8px}.preview,.editor{width:min(430px,100%)}.appbar{padding:0 12px}.badge{display:none}}
+    @media(max-width:430px){.layout{padding:0;margin:0}.preview{width:100%;box-shadow:none}.editor{width:calc(100% - 16px);margin:14px 8px}.hero{height:340px}.row{min-height:60px}.appbar{height:50px}}
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">ARCHIVE / STUDIO</div>
-    <span class="demo-pill">ЛОКАЛЬНЫЙ ДЕМО-МАКЕТ</span>
-  </header>
-  <main class="workspace">
-    <section class="preview-area" aria-label="Предпросмотр страницы товара">
-      <div class="preview-caption">Предпросмотр · пропорции экрана iPhone 17 Pro Max</div>
-      <div class="device">
-        <div class="phone-status"><span>9:41</span><span>●●●　◉　▰</span></div>
-        <div class="store-nav"><span class="store-logo">ARCHIVE</span><span class="nav-icons"><span aria-hidden="true">⌕</span><span aria-hidden="true">♡</span><span aria-hidden="true">▱</span></span></div>
-        <div class="demo-ribbon">DEMO · НЕ ОФИЦИАЛЬНЫЙ САЙТ И НЕ GOAT</div>
-        <div class="product-image" id="imageBox">
-          <div class="image-fallback" id="imageFallback"><strong>＋</strong>Добавьте фото товара в панели настроек</div>
-          <img id="productImage" alt="Фото товара" hidden>
-        </div>
-        <div class="product-content">
-          <div class="condition">НОВЫЙ · В КОРОБКЕ</div>
-          <h2 class="product-title" id="previewName">Кроссовки Archive Runner</h2>
-          <p class="product-subtitle">Коллекция · повседневная обувь</p>
-          <div class="size-row"><span>Размер</span><span class="size-value" id="previewSize">US M 9</span></div>
-          <div class="price-row"><span class="price" id="previewPrice">$0.00</span><span class="ship-note">＋ доставка</span></div>
-          <button type="button" class="buy-button" aria-label="Демонстрационная кнопка, оформление заказа отключено">КУПИТЬ · ДЕМО</button>
-          <div class="location">Местоположение продавца<br><b id="previewAddress">Нью-Йорк, США</b></div>
-        </div>
+  <header class="appbar"><div class="brand">ORDER STUDIO</div><div class="bar-right"><span class="badge">DEMO · НЕ ОФИЦИАЛЬНЫЙ СЕРВИС</span><button class="install" id="installBtn" hidden>Установить приложение</button></div></header>
+  <main class="layout">
+    <section class="preview" aria-label="Предпросмотр демо-страницы">
+      <div class="status"><span>15:05</span><span>▮▮▮　◉　▰</span></div>
+      <div class="demo-mark">DEMO · НЕ ОФИЦИАЛЬНЫЙ ДОКУМЕНТ</div>
+      <div class="hero"><button class="photoBtn" id="photoBtn" type="button" title="Нажмите, чтобы заменить изображение"><span class="placeholder" id="placeholder"><b>＋ Фото товара</b>Выберите файл или укажите URL справа</span><img id="photo" alt="Фото товара" hidden></button><div class="heroTitle" id="heroTitle"></div><div class="heroOrder" id="heroOrder"></div></div>
+      <div class="progress"><div class="track"><i class="middle"></i></div><div class="stages"><span>Отправлено</span><span>Доставлено</span><span>Завершено</span></div><div class="thanks">Демонстрационный экран макета заказа.</div></div>
+      <div class="rows">
+        <div class="row"><span>Дата заказа</span><span class="val plain" id="oDate"></span></div><div class="row"><span>Номер заказа</span><span class="val" id="oNumber"></span></div><div class="row"><span>Товар</span><span class="val" id="oItem"></span></div><div class="row"><span>Артикул</span><span class="val" id="oSku"></span></div><div class="row"><span>Размер</span><span class="val plain" id="oSize"></span></div><div class="row"><span>Состояние</span><span class="val plain" id="oCondition"></span></div><div class="row"><span>Отслеживание</span><span class="val" id="oTracking"></span></div><div class="row address"><span>Адрес</span><span class="val plain"><span id="oCountry"></span><br><span id="oRegion"></span><br><span id="oCity"></span><br><span id="oZip"></span></span></div>
       </div>
+      <div class="totals"><div class="totalLabels"><span>Цена</span><span>Доставка</span><span>Итого</span></div><div class="totalValues"><span id="oPrice"></span><span id="oShipping"></span><span id="oTotal"></span></div></div>
     </section>
-    <section class="edit-panel" aria-labelledby="formTitle">
-      <h1 id="formTitle">Настройки макета</h1>
-      <p class="intro">Меняйте данные — предпросмотр обновится автоматически. Настройки сохраняются только в этом браузере.</p>
-      <div class="field"><label for="nameInput">Название товара</label><input id="nameInput" value="Кроссовки Archive Runner" maxlength="70"></div>
-      <div class="field"><label for="imageFile">Фотография товара (с устройства)</label><input id="imageFile" type="file" accept="image/*"><p class="hint">Изображение не загружается на сервер и остаётся в вашем браузере.</p></div>
-      <div class="two-col">
-        <div class="field"><label for="priceInput">Цена товара ($)</label><input id="priceInput" type="number" min="0" step="0.01" value="0"></div>
-        <div class="field"><label for="commissionInput">Комиссия (%)</label><input id="commissionInput" type="number" min="0" max="100" step="0.1" value="0"></div>
-      </div>
-      <div class="money-box" aria-live="polite">
-        <div class="calc-row"><span>Цена товара</span><strong id="calcPrice">$0.00</strong></div>
-        <div class="calc-row"><span>Комиссия</span><strong id="calcCommission">−$0.00</strong></div>
-        <div class="calc-row total"><span>После комиссии</span><strong id="calcPayout">$0.00</strong></div>
-        <p class="hint">Расчёт: цена × процент комиссии; сумма после комиссии = цена − комиссия. Укажите актуальный процент самостоятельно.</p>
-      </div>
-      <div class="two-col">
-        <div class="field"><label for="sizeInput">Размер</label><input id="sizeInput" value="US M 9" maxlength="20"></div>
-        <div class="field"><label for="addressInput">Адрес / локация</label><input id="addressInput" value="Нью-Йорк, США" maxlength="80"></div>
-      </div>
-      <div class="actions"><button class="save" id="saveButton" type="button">Сохранить в браузере</button><button class="reset" id="resetButton" type="button">Сбросить</button></div>
-      <p class="saved" id="savedMessage" aria-live="polite"></p>
-      <p class="disclaimer">Это самостоятельный демонстрационный макет: он не связан с GOAT, не принимает платежи, не создаёт объявления и не подтверждает подлинность товаров. Не используйте его для выдачи за настоящий сервис.</p>
-    </section>
-  </main>
-<script>
-(() => {
-  const defaults = { name:'Кроссовки Archive Runner', price:'0', commission:'0', size:'US M 9', address:'Нью-Йорк, США', image:'' };
-  const ids = ['nameInput','priceInput','commissionInput','sizeInput','addressInput'];
-  const fields = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
-  const image = document.getElementById('productImage');
-  const fallback = document.getElementById('imageFallback');
-  const currency = value => '$' + (Number.isFinite(value) ? value : 0).toFixed(2);
-  function update() {
-    const price = Math.max(0, Number(fields.priceInput.value) || 0);
-    const rate = Math.min(100, Math.max(0, Number(fields.commissionInput.value) || 0));
-    const fee = price * rate / 100;
-    document.getElementById('previewName').textContent = fields.nameInput.value.trim() || defaults.name;
-    document.getElementById('previewPrice').textContent = currency(price);
-    document.getElementById('previewSize').textContent = fields.sizeInput.value.trim() || '—';
-    document.getElementById('previewAddress').textContent = fields.addressInput.value.trim() || 'Не указано';
-    document.getElementById('calcPrice').textContent = currency(price);
-    document.getElementById('calcCommission').textContent = '−' + currency(fee);
-    document.getElementById('calcPayout').textContent = currency(price - fee);
-    document.getElementById('savedMessage').textContent = '';
-  }
-  function setImage(src) {
-    if (!src) { image.hidden = true; image.removeAttribute('src'); fallback.hidden = false; return; }
-    image.src = src; image.hidden = false; fallback.hidden = true;
-  }
-  function save() {
-    const data = Object.fromEntries(ids.map(id => [id, fields[id].value]));
-    data.image = image.hidden ? '' : image.src;
-    try { localStorage.setItem('archiveStudioDemo', JSON.stringify(data)); document.getElementById('savedMessage').textContent = 'Сохранено в этом браузере.'; }
-    catch (_) { document.getElementById('savedMessage').textContent = 'Не удалось сохранить — возможно, фото слишком большое. Попробуйте изображение меньшего размера.'; }
-  }
-  function load() {
-    try {
-      const data = JSON.parse(localStorage.getItem('archiveStudioDemo') || 'null');
-      if (data) { ids.forEach(id => { if (typeof data[id] === 'string') fields[id].value = data[id]; }); setImage(data.image || ''); }
-    } catch (_) { /* Ignore damaged local demo settings. */ }
-  }
-  ids.forEach(id => fields[id].addEventListener('input', update));
-  document.getElementById('imageFile').addEventListener('change', event => {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { alert('Выберите файл изображения.'); return; }
-    const reader = new FileReader(); reader.onload = () => { setImage(String(reader.result)); update(); }; reader.readAsDataURL(file);
-  });
-  document.getElementById('saveButton').addEventListener('click', save);
-  document.getElementById('resetButton').addEventListener('click', () => {
-    ids.forEach(id => fields[id].value = defaults[id.replace('Input','')] || '');
-    document.getElementById('imageFile').value = ''; setImage(''); localStorage.removeItem('archiveStudioDemo'); update();
-  });
-  load(); update();
-})();
-</script>
+    <aside class="editor"><h1>Редактор макета</h1><p class="desc">Изменения отображаются сразу. Данные хранятся только в этом браузере.</p>
+      <div class="field"><label for="imageUrl">Изображение по ссылке</label><div class="photoActions"><input id="imageUrl" type="url" placeholder="https://example.com/image.jpg"><button id="applyUrl" type="button">Применить</button></div></div>
+      <div class="field"><label for="imageFile">Или выбрать фото с компьютера</label><input id="imageFile" type="file" accept="image/*"></div>
+      <div class="grid"><div class="field"><label for="price">Цена ($)</label><input id="price" type="number" min="0" step="0.01" value="757"></div><div class="field"><label for="shipping">Доставка ($)</label><input id="shipping" type="number" min="0" step="0.01" value="25.15"></div></div>
+      <div class="field"><label for="commission">Комиссия (%)</label><input id="commission" type="number" min="0" max="100" step="0.01" value="0"></div>
+      <div class="calc"><div><span>Комиссия</span><b id="fee"></b></div><div><span>После комиссии</span><b id="payout"></b></div></div>
+      <div class="field"><label for="item">Название товара</label><input id="item" value="Кроссовки Runner 'Grey Multi-Color'"></div>
+      <div class="grid"><div class="field"><label for="order">Номер заказа</label><input id="order" value="#DEMO-0001"></div><div class="field"><label for="date">Дата</label><input id="date" value="05.03.26"></div></div>
+      <div class="grid"><div class="field"><label for="sku">Артикул</label><input id="sku" value="DEMO-12345"></div><div class="field"><label for="size">Размер</label><input id="size" value="42"></div></div>
+      <div class="grid"><div class="field"><label for="condition">Состояние</label><input id="condition" value="Новое"></div><div class="field"><label for="tracking">Трек-номер</label><input id="tracking" value="DEMO-TRACK"></div></div>
+      <div class="field"><label for="country">Страна</label><input id="country" value="United States"></div><div class="grid"><div class="field"><label for="region">Регион</label><input id="region" value="Oregon"></div><div class="field"><label for="city">Город</label><input id="city" value="South Eugene"></div></div><div class="field"><label for="zip">Индекс</label><input id="zip" value="97405"></div>
+      <div class="buttons"><button class="save" id="save">Сохранить</button><button class="reset" id="reset">Сбросить</button></div><div class="statusmsg" id="saved"></div><p class="foot">Демо-проект не связан с реальным магазином и не выполняет оплату, доставку или подтверждение заказа.</p>
+    </aside>
+  </main><div class="offline" id="offline">Работает офлайн</div>
+  <script>
+    const $=id=>document.getElementById(id), fields=['price','shipping','commission','item','order','date','sku','size','condition','tracking','country','region','city','zip'];
+    const fmt=n=>'$'+(Number(n)||0).toFixed(2);
+    function update(){const p=Math.max(0,+$('price').value||0),s=Math.max(0,+$('shipping').value||0),r=Math.max(0,Math.min(100,+$('commission').value||0)),f=p*r/100; $('heroTitle').textContent=$('item').value;$('heroOrder').textContent=$('order').value; const map={date:'oDate',order:'oNumber',item:'oItem',sku:'oSku',size:'oSize',condition:'oCondition',tracking:'oTracking',country:'oCountry',region:'oRegion',city:'oCity',zip:'oZip'};Object.entries(map).forEach(([a,b])=>$(b).textContent=$(a).value);$('oPrice').textContent=fmt(p);$('oShipping').textContent=fmt(s);$('oTotal').textContent=fmt(p+s);$('fee').textContent=fmt(f);$('payout').textContent=fmt(p-f);$('saved').textContent='';}
+    function setPhoto(src){$('photo').src=src;$('photo').hidden=false;$('placeholder').hidden=true;$('imageUrl').value=src.startsWith('data:')?'':src;}
+    $('photoBtn').onclick=()=>$('imageFile').click();$('applyUrl').onclick=()=>{const url=$('imageUrl').value.trim();if(!url)return;try{const u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw 0;setPhoto(u.href);}catch(_){alert('Введите корректную ссылку, начинающуюся с https://');}};
+    $('imageFile').onchange=e=>{const f=e.target.files?.[0];if(f&&f.type.startsWith('image/')){const r=new FileReader();r.onload=()=>setPhoto(r.result);r.readAsDataURL(f);}};
+    fields.forEach(id=>$(id).addEventListener('input',update));
+    $('save').onclick=()=>{try{const d={};fields.forEach(id=>d[id]=$(id).value);d.photo=$('photo').hidden?'':$('photo').src;localStorage.setItem('orderStudioDemo',JSON.stringify(d));$('saved').textContent='Сохранено в этом браузере.';}catch(_){$('saved').textContent='Не удалось сохранить фото. Попробуйте меньший файл.';}};
+    $('reset').onclick=()=>{localStorage.removeItem('orderStudioDemo');location.reload();};
+    try{const d=JSON.parse(localStorage.getItem('orderStudioDemo')||'null');if(d){fields.forEach(id=>{if(d[id]!==undefined)$(id).value=d[id]});if(d.photo)setPhoto(d.photo);}}catch(_){} update();
+    let installEvent;$('installBtn').hidden=true;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;$('installBtn').hidden=false;});$('installBtn').onclick=async()=>{if(!installEvent)return;installEvent.prompt();await installEvent.userChoice;installEvent=null;$('installBtn').hidden=true;};window.addEventListener('appinstalled',()=>$('installBtn').hidden=true);
+    if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').then(()=>{if(!navigator.onLine)$('offline').classList.add('show')}).catch(()=>{});window.addEventListener('offline',()=>$('offline').classList.add('show'));window.addEventListener('online',()=>$('offline').classList.remove('show'));
+  </script>
 </body>
 </html>
